@@ -27,6 +27,12 @@ or using Flask's built-in server for development.
 
 The app will be available at `http://localhost:5000`.
 
+## Wallet Connection
+
+On the channel list page you can click **Connect Wallet** to link a crypto
+wallet. The page supports popular options including MetaMask, Coinbase Wallet
+and WalletConnect using Web3Modal and ethers.js.
+
 ## Adding YouTube channels
 
 To change which channels appear in the app, edit the `CHANNEL_IDS` list in

@@ -2,9 +2,16 @@
 <title>YouTube Channels</title>
 <h1>Welcome {{ username }}</h1>
 <p><a href="{{ url_for('main.logout') }}">Logout</a></p>
+<button id="connect-wallet">Connect Wallet</button>
+<p id="wallet-info"></p>
 <h2>Channels</h2>
 <ul>
     {% for ch in channels %}
     <li><a href="{{ ch.url }}" target="_blank">{{ ch.title }}</a></li>
     {% endfor %}
 </ul>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1/dist/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@3/dist/CoinbaseWalletSDK.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3modal@1/dist/index.js"></script>
+<script src="{{ url_for('static', filename='wallet.js') }}"></script>

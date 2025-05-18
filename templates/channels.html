@@ -1,0 +1,10 @@
+<!doctype html>
+<title>YouTube Channels</title>
+<h1>Welcome {{ username }}</h1>
+<p><a href="{{ url_for('main.logout') }}">Logout</a></p>
+<h2>Channels</h2>
+<ul>
+    {% for ch in channels %}
+    <li><a href="{{ ch.url }}" target="_blank">{{ ch.title }}</a></li>
+    {% endfor %}
+</ul>

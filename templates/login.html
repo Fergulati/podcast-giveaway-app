@@ -1,8 +1,18 @@
-<!doctype html>
-<title>Login</title>
-<h1>Login with YouTube Username</h1>
-<form method="post">
-    <label for="username">YouTube Username:</label>
-    <input type="text" id="username" name="username" required>
-    <button type="submit">Login</button>
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<h1 class="text-xl mb-4">Login with YouTube Username</h1>
+{% if error %}
+<p class="text-red-600 mb-2">{{ error }}</p>
+{% endif %}
+<form method="post" class="space-y-2">
+    <div>
+        <label for="username" class="block">YouTube Username:</label>
+        <input type="text" id="username" name="username" class="border p-2 w-full" required>
+    </div>
+    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Login</button>
 </form>
+<p class="mt-4">
+    <a href="{{ url_for('google.login') }}" class="px-4 py-2 bg-red-600 text-white rounded">Login with Google</a>
+</p>
+{% endblock %}

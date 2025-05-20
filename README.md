@@ -40,13 +40,14 @@ To change which channels appear in the app, edit the `CHANNEL_IDS` list in
 
 ```python
 CHANNEL_IDS = [
-    "UC_x5XG1OV2P6uZZ5FSM9Ttw",  # Google Developers
-    # add more channel IDs here
+    "UCZY97wqlKHsx2qFibsMLLtg",
+    "UCAI6Gk0R_1aGa76ShKFA78Q",
+    "UCJfeceoPn3MSpdNM3n-DIWg",
 ]
 ```
 
 Each item should be a YouTube channel ID. If you have a full channel URL (e.g.
-`https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw`), copy the part
+`https://www.youtube.com/channel/UCZY97wqlKHsx2qFibsMLLtg`), copy the part
 after `/channel/` and place it in the list. When the `YOUTUBE_API_KEY`
 environment variable is set, the app will fetch the channel titles for you.
 

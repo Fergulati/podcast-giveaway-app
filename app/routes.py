@@ -38,6 +38,18 @@ def index():
     return render_template('channels.html', username=username, channels=channels)
 
 
+@bp.route('/channel/<cid>')
+def watch_channel(cid):
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('main.login'))
+    channels = get_channel_data()
+    channel = next((c for c in channels if c['id'] == cid), None)
+    if channel is None:
+        return redirect(url_for('main.index'))
+    return render_template('watch.html', username=username, channel=channel)
+
+
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -45,7 +57,7 @@ def login():
         session['username'] = username
         session['role'] = 'ROLE_ADMIN' if username == 'admin' else 'ROLE_USER'
         return redirect(url_for('main.index'))
-    return render_template('login.html')
+    return render_template('login.html', username=None)
 
 
 @bp.route('/logout')
@@ -77,7 +89,7 @@ def dashboard():
             db_session.close()
 
     current_user = SimpleNamespace(id=user_id, username=username, points_total=points_total)
-    return render_template('dashboard.html', current_user=current_user)
+    return render_template('dashboard.html', current_user=current_user, username=username)
 
 
 def get_channel_data():

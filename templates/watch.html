@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ channel.title }}{% endblock %}
+{% block content %}
+<h2 class="text-xl mb-4">{{ channel.title }}</h2>
+<div class="mb-4">
+    <iframe class="w-full h-96" src="https://www.youtube.com/embed?listType=user_uploads&list={{ channel.id }}" frameborder="0" allowfullscreen></iframe>
+</div>
+<p>
+    <a href="{{ channel.url }}" class="text-blue-600 underline" target="_blank">View on YouTube</a>
+</p>
+{% endblock %}

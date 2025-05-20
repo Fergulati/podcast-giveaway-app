@@ -1,17 +1,23 @@
-<!doctype html>
-<title>YouTube Channels</title>
-<h1>Welcome {{ username }}</h1>
-<p><a href="{{ url_for('main.logout') }}">Logout</a></p>
-<button id="connect-wallet">Connect Wallet</button>
-<p id="wallet-info"></p>
-<h2>Channels</h2>
-<ul>
+{% extends "base.html" %}
+{% block title %}YouTube Channels{% endblock %}
+{% block content %}
+<h2 class="text-xl mb-4">Channels</h2>
+<ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
     {% for ch in channels %}
-    <li><a href="{{ ch.url }}" target="_blank">{{ ch.title }}</a></li>
+    <li class="p-4 bg-white rounded shadow">
+        <h3 class="font-semibold mb-2">{{ ch.title }}</h3>
+        <a href="{{ url_for('main.watch_channel', cid=ch.id) }}" class="text-blue-600 underline mr-4">Watch</a>
+        <a href="{{ ch.url }}" class="text-blue-600 underline" target="_blank">YouTube</a>
+    </li>
     {% endfor %}
 </ul>
+<button id="connect-wallet" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded">Connect Wallet</button>
+<p id="wallet-info" class="mt-2 text-sm"></p>
+{% endblock %}
+{% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1/dist/umd/index.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@3/dist/CoinbaseWalletSDK.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/web3modal@1/dist/index.js"></script>
 <script src="{{ url_for('static', filename='wallet.js') }}"></script>
+{% endblock %}

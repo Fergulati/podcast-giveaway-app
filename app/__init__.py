@@ -1,4 +1,5 @@
 from flask import Flask
+import os
 
 try:
     from .db import init_db
@@ -14,6 +15,11 @@ try:
     from .tasks import init_scheduler
 except Exception:
     init_scheduler = None  # type: ignore
+
+try:
+    from flask_dance.contrib.google import make_google_blueprint
+except Exception:
+    make_google_blueprint = None  # type: ignore
 
 try:
     from .admin.routes import init_admin
@@ -54,6 +60,24 @@ def create_app():
         except Exception as exc:  # pragma: no cover - optional dependency
             app.logger.warning("Database unavailable: %s", exc)
 
+    google_bp = None
+    if make_google_blueprint is not None:
+        cid = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
+        secret = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
+        if cid and secret:
+            google_bp = make_google_blueprint(
+                client_id=cid,
+                client_secret=secret,
+                scope=[
+                    "https://www.googleapis.com/auth/youtube.readonly",
+                    "https://www.googleapis.com/auth/userinfo.profile",
+                ],
+                redirect_url="/oauth-login",
+            )
+            app.register_blueprint(google_bp, url_prefix="/login")
+        else:
+            app.logger.warning("Google OAuth credentials not configured")
+
     if init_admin and session_factory is not None:
         try:
             init_admin(app, session_factory)
@@ -76,5 +100,6 @@ def create_app():
 
     app.session_factory = session_factory
     app.socketio = socketio
+    app.google_bp = google_bp
 
     return app

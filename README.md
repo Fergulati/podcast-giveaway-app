@@ -32,6 +32,20 @@ or using Flask's built-in server for development.
 
 The app will be available at `http://localhost:5000`.
 
+### Google OAuth
+
+To allow users to sign in with their YouTube account, create OAuth
+credentials in the Google Cloud Console and set the following environment
+variables:
+
+```bash
+export GOOGLE_OAUTH_CLIENT_ID=<client id>
+export GOOGLE_OAUTH_CLIENT_SECRET=<client secret>
+```
+
+Add `http://localhost:5000/login/oauth-login` as an authorized redirect URI
+for the OAuth client.
+
 ## Wallet Connection
 
 On the channel list page you can click **Connect Wallet** to link a crypto

@@ -1,6 +1,14 @@
 from flask import Flask
 import os
 
+
+try:
+    from flask_dance.contrib.google import make_google_blueprint, google
+except Exception:  # pragma: no cover - optional dependency
+    make_google_blueprint = None  # type: ignore
+    google = None  # type: ignore
+
+
 try:
     from .db import init_db
 except Exception:
@@ -44,6 +52,18 @@ def create_app():
         static_folder="../static",
     )
     app.config.from_mapping(SECRET_KEY='dev')
+
+    if make_google_blueprint:
+        google_bp = make_google_blueprint(
+            client_id=os.environ.get("GOOGLE_OAUTH_CLIENT_ID"),
+            client_secret=os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET"),
+            scope=[
+                "https://www.googleapis.com/auth/youtube.readonly",
+                "https://www.googleapis.com/auth/userinfo.profile",
+            ],
+            redirect_url="/oauth-login",
+        )
+        app.register_blueprint(google_bp, url_prefix="/login")
 
     from . import routes
     routes.init_app(app)

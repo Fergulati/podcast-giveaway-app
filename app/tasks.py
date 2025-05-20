@@ -4,14 +4,12 @@ import json
 from datetime import datetime
 from typing import Optional
 
-from .models import EventType, Engagement, PointsLedger, OAuth, User, get_total_points
+from .models import EventType, Engagement, OAuth, User, get_total_points
+from .utils.points import apply_points, DEFAULT_POINT_MATRIX
 
 
-RULES = {
-    "COMMENT": 5,
-    "LIKE": 2,
-    "SUPERCHAT": lambda amount: amount * 10,
-}
+# Default mapping for tasks when no Flask config is available
+RULES = DEFAULT_POINT_MATRIX
 
 
 def init_scheduler(app, session_factory, socketio=None):
@@ -99,22 +97,8 @@ def _update_engagements(app, session_factory, socketio=None):
                     raw_json=json.dumps(item),
                 )
                 session.add(engagement)
-                rule = RULES[etype]
-                if callable(rule):
-                    amount = item.get("snippet", {}).get("superChatDetails", {}).get(
-                        "amountMicros", 0
-                    ) / 1_000_000
-                    points = int(rule(amount))
-                else:
-                    points = rule
-                ledger = PointsLedger(
-                    user_id=oauth.user_id,
-                    engagement=engagement,
-                    points_delta=points,
-                    reason=etype,
-                    timestamp=datetime.utcnow(),
-                )
-                session.add(ledger)
+                session.flush()
+                apply_points(oauth.user, engagement)
             session.commit()
             total = get_total_points(session, oauth.user_id)
             if socketio is not None:

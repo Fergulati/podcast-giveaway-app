@@ -20,6 +20,7 @@ bp = Blueprint('main', __name__)
 API_KEY = os.environ.get('YOUTUBE_API_KEY')
 
 CHANNEL_IDS = [
+
     'UCZY97wqlKHsx2qFibsMLLtg',
     'UCAI6Gk0R_1aGa76ShKFA78Q',
     'UCJfeceoPn3MSpdNM3n-DIWg',

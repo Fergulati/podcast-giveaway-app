@@ -1,7 +1,8 @@
 # Podcast Giveaway App
 
 This project contains a minimal Flask application that lets users log in with a
-YouTube username and view information about several YouTube channels. It can be
+YouTube account via Google OAuth (or a plain username) and view information
+about several YouTube channels. It can be
 embedded in a larger website by mounting the Flask app behind a reverse proxy
 or using Flask's built-in server for development.
 
@@ -15,11 +16,15 @@ or using Flask's built-in server for development.
    pip install -r requirements.txt
    ```
 
-2. (Optional) Set the `YOUTUBE_API_KEY` environment variable to fetch channel
+2. Set the `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET`
+   environment variables to enable Google sign-in. If these are not provided,
+   the app falls back to a simple username form.
+
+3. (Optional) Set the `YOUTUBE_API_KEY` environment variable to fetch channel
    names from the YouTube Data API. Without an API key the app will still
    display simple channel links.
 
-3. Run the development server:
+4. Run the development server:
 
    ```bash
    python run.py

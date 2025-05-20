@@ -9,9 +9,14 @@ from flask import (
 )
 from types import SimpleNamespace
 
-from .models import User, get_total_points
+from .models import User, OAuth, get_total_points
 import os
 import requests
+import json
+try:
+    from flask_dance.contrib.google import google
+except Exception:
+    google = None  # type: ignore
 
 bp = Blueprint('main', __name__)
 
@@ -60,6 +65,47 @@ def login():
         session['role'] = 'ROLE_ADMIN' if username == 'admin' else 'ROLE_USER'
         return redirect(url_for('main.index'))
     return render_template('login.html', username=None)
+
+
+
+@bp.route('/oauth-login')
+def oauth_login():
+    if google is None:
+        return redirect(url_for('main.login'))
+    if not google.authorized:
+        return redirect(url_for('google.login'))
+    resp = google.get('/oauth2/v2/userinfo')
+    if not resp or not resp.ok:
+        return redirect(url_for('main.login'))
+    info = resp.json()
+    username = info.get('name') or info.get('email')
+    session['username'] = username
+    session['role'] = 'ROLE_ADMIN' if username == 'admin' else 'ROLE_USER'
+    token_data = google.token
+    session_factory = getattr(current_app, 'session_factory', None)
+    if session_factory is not None:
+        db_session = session_factory()
+        try:
+            user = db_session.query(User).filter_by(username=username).first()
+            if user is None:
+                user = User(username=username)
+                db_session.add(user)
+                db_session.commit()
+            oauth = (
+                db_session.query(OAuth)
+                .filter_by(provider='youtube', user_id=user.id)
+                .first()
+            )
+            token_str = json.dumps(token_data)
+            if oauth is None:
+                oauth = OAuth(provider='youtube', token=token_str, user_id=user.id)
+                db_session.add(oauth)
+            else:
+                oauth.token = token_str
+            db_session.commit()
+        finally:
+            db_session.close()
+    return redirect(url_for('main.index'))
 
 
 @bp.route('/logout')

@@ -7,6 +7,7 @@ from sqlalchemy import (
     DateTime,
     Text,
     Enum,
+    Boolean,
     func,
 )
 from sqlalchemy.orm import relationship, declarative_base
@@ -101,6 +102,21 @@ class OAuth(Base):
     def __repr__(self) -> str:
         return (
             f"<OAuth id={self.id} provider={self.provider!r} user_id={self.user_id}>"
+        )
+
+
+class GiveawayWinner(Base):
+    """Track winners pending payout."""
+
+    __tablename__ = "giveaway_winners"
+
+    id = Column(Integer, primary_key=True)
+    payout_item_id = Column(String, unique=True, nullable=False)
+    paid = Column(Boolean, nullable=False, default=False)
+
+    def __repr__(self) -> str:
+        return (
+            f"<GiveawayWinner id={self.id} payout_item_id={self.payout_item_id!r} paid={self.paid}>"
         )
 
 

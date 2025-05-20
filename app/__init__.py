@@ -25,6 +25,11 @@ try:
 except Exception:
     init_socket_events = None  # type: ignore
 
+try:
+    from services.paypal_webhook import init_paypal_webhook
+except Exception:
+    init_paypal_webhook = None  # type: ignore
+
 
 def create_app():
     app = Flask(
@@ -36,6 +41,11 @@ def create_app():
 
     from . import routes
     routes.init_app(app)
+    if init_paypal_webhook:
+        try:
+            init_paypal_webhook(app)
+        except Exception as exc:  # pragma: no cover - optional dependency
+            app.logger.warning("PayPal webhook init failed: %s", exc)
 
     session_factory = None
     if init_db:

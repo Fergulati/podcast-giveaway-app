@@ -107,3 +107,22 @@ def _update_engagements(app, session_factory, socketio=None):
                 )
     finally:
         session.close()
+
+
+def schedule_points_recalc(event_type):
+    """Placeholder to trigger async recalculation of user points."""
+    try:
+        from celery import shared_task  # type: ignore
+    except Exception:  # pragma: no cover - Celery not available
+        shared_task = None  # type: ignore
+
+    if shared_task is None:
+        # In absence of Celery, simply log the request
+        print(f"Recalculate points for event type {event_type}")
+        return
+
+    @shared_task
+    def _recalc(event):
+        print(f"Recalculating points for {event}")
+
+    _recalc.delay(event_type)

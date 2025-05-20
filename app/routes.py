@@ -41,7 +41,9 @@ def index():
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        session['username'] = request.form['username']
+        username = request.form['username']
+        session['username'] = username
+        session['role'] = 'ROLE_ADMIN' if username == 'admin' else 'ROLE_USER'
         return redirect(url_for('main.index'))
     return render_template('login.html')
 

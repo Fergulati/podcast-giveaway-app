@@ -74,6 +74,18 @@ class PointsLedger(Base):
         )
 
 
+class PointsMatrix(Base):
+    """Mapping of event types to point values."""
+
+    __tablename__ = "points_matrix"
+
+    event_type = Column(Enum(EventType), primary_key=True)
+    value = Column(Integer, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<PointsMatrix event_type={self.event_type.name} value={self.value}>"
+
+
 class OAuth(Base):
     """Minimal token storage compatible with Flask-Dance."""
 

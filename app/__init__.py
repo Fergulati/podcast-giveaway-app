@@ -15,6 +15,11 @@ try:
 except Exception:
     init_scheduler = None  # type: ignore
 
+try:
+    from .socket_events import init_socket_events
+except Exception:
+    init_socket_events = None  # type: ignore
+
 
 def create_app():
     app = Flask(
@@ -42,6 +47,11 @@ def create_app():
                 init_scheduler(app, session_factory, socketio)
             except Exception as exc:  # pragma: no cover
                 app.logger.warning("Scheduler failed: %s", exc)
+        if init_socket_events and session_factory is not None:
+            try:
+                init_socket_events(app, session_factory, socketio)
+            except Exception as exc:  # pragma: no cover
+                app.logger.warning("Socket events failed: %s", exc)
 
     app.session_factory = session_factory
     app.socketio = socketio

@@ -25,6 +25,7 @@ bp = Blueprint('main', __name__)
 API_KEY = os.environ.get('YOUTUBE_API_KEY')
 
 CHANNEL_IDS = [
+
     'UCZY97wqlKHsx2qFibsMLLtg',
     'UCAI6Gk0R_1aGa76ShKFA78Q',
     'UCJfeceoPn3MSpdNM3n-DIWg',
@@ -64,6 +65,7 @@ def login():
         session['role'] = 'ROLE_ADMIN' if username == 'admin' else 'ROLE_USER'
         return redirect(url_for('main.index'))
     return render_template('login.html', username=None)
+
 
 
 @bp.route('/oauth-login')

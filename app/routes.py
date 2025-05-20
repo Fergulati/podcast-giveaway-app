@@ -9,6 +9,7 @@ from flask import (
 )
 from types import SimpleNamespace
 
+
 from .models import User, get_total_points
 try:
     from flask_dance.contrib.google import google
@@ -17,6 +18,11 @@ except Exception:  # pragma: no cover - optional dependency
 import json
 import os
 import requests
+import json
+try:
+    from flask_dance.contrib.google import google
+except Exception:
+    google = None  # type: ignore
 
 bp = Blueprint('main', __name__)
 
@@ -25,6 +31,7 @@ bp = Blueprint('main', __name__)
 API_KEY = os.environ.get('YOUTUBE_API_KEY')
 
 CHANNEL_IDS = [
+
     'UCZY97wqlKHsx2qFibsMLLtg',
     'UCAI6Gk0R_1aGa76ShKFA78Q',
     'UCJfeceoPn3MSpdNM3n-DIWg',
@@ -60,6 +67,7 @@ def watch_channel(cid):
 def login():
     error = None
     if request.method == 'POST':
+
         username = request.form['username'].strip()
         if not username:
             error = 'Username required'
@@ -72,6 +80,7 @@ def login():
     return render_template('login.html', username=None, error=error)
 
 
+
 @bp.route('/oauth-login')
 def oauth_login():
     if google is None:
@@ -79,13 +88,15 @@ def oauth_login():
     if not google.authorized:
         return redirect(url_for('google.login'))
     resp = google.get('/oauth2/v2/userinfo')
+
     if not resp.ok:
+
         return redirect(url_for('main.login'))
     info = resp.json()
     username = info.get('name') or info.get('email')
     session['username'] = username
-    session['role'] = 'ROLE_USER'
 
+    session['role'] = 'ROLE_USER'
     token = google.blueprint.token
     session_factory = getattr(current_app, 'session_factory', None)
     if session_factory is not None:
@@ -96,12 +107,15 @@ def oauth_login():
                 user = User(username=username)
                 db_session.add(user)
                 db_session.commit()
+
             from .models import OAuth
+
             oauth = (
                 db_session.query(OAuth)
                 .filter_by(provider='youtube', user_id=user.id)
                 .first()
             )
+
             token_json = json.dumps(token)
             if oauth:
                 oauth.token = token_json

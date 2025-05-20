@@ -24,10 +24,11 @@ try:
 except Exception:
     init_scheduler = None  # type: ignore
 
-try:
-    from flask_dance.contrib.google import make_google_blueprint
-except Exception:
-    make_google_blueprint = None  # type: ignore
+# ``make_google_blueprint`` is already imported above together with ``google``.
+# Older versions of this module duplicated the import which caused the
+# variable to be reassigned and made the intent harder to follow.  The
+# duplicate import is no longer needed and has been removed to avoid any
+# confusion.
 
 try:
     from .admin.routes import init_admin
@@ -53,17 +54,13 @@ def create_app():
     )
     app.config.from_mapping(SECRET_KEY='dev')
 
-    if make_google_blueprint:
-        google_bp = make_google_blueprint(
-            client_id=os.environ.get("GOOGLE_OAUTH_CLIENT_ID"),
-            client_secret=os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET"),
-            scope=[
-                "https://www.googleapis.com/auth/youtube.readonly",
-                "https://www.googleapis.com/auth/userinfo.profile",
-            ],
-            redirect_url="/oauth-login",
-        )
-        app.register_blueprint(google_bp, url_prefix="/login")
+
+    # The Google OAuth blueprint is configured later in this function once we
+    # know whether valid credentials are available.  The original implementation
+    # registered it unconditionally here which resulted in the blueprint being
+    # added twice and caused Flask to raise a `ValueError` about the name
+    # "google" already being registered.  Removing the early registration keeps
+    # the blueprint setup in a single place.
 
     from . import routes
     routes.init_app(app)

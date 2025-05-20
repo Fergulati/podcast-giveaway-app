@@ -1,4 +1,15 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    current_app,
+)
+from types import SimpleNamespace
+
+from .models import User, get_total_points
 import os
 import requests
 
@@ -39,6 +50,32 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('main.login'))
+
+
+@bp.route('/dashboard')
+def dashboard():
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('main.login'))
+
+    points_total = 0
+    user_id = None
+    session_factory = getattr(current_app, 'session_factory', None)
+    if session_factory is not None:
+        db_session = session_factory()
+        try:
+            user = db_session.query(User).filter_by(username=username).first()
+            if user is None:
+                user = User(username=username)
+                db_session.add(user)
+                db_session.commit()
+            user_id = user.id
+            points_total = get_total_points(db_session, user.id)
+        finally:
+            db_session.close()
+
+    current_user = SimpleNamespace(id=user_id, username=username, points_total=points_total)
+    return render_template('dashboard.html', current_user=current_user)
 
 
 def get_channel_data():

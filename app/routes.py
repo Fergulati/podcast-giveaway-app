@@ -21,7 +21,7 @@ API_KEY = os.environ.get('YOUTUBE_API_KEY')
 
 CHANNEL_IDS = [
     # Example channel IDs can be added here
-    'UC_x5XG1OV2P6uZZ5FSM9Ttw',  # Google Developers
+    'UCZY97wqlKHsx2qFibsMLLtg', 'UCAI6Gk0R_1aGa76ShKFA78Q', 'UCJfeceoPn3MSpdNM3n-DIWg' # Google Developers
 ]
 
 

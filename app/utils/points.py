@@ -22,7 +22,7 @@ def _get_matrix() -> Dict[str, Any]:
         from flask import current_app
 
         matrix = current_app.config.get("POINT_MATRIX")
-        if matrix:
+        if matrix is not None:
             return matrix
     except Exception:  # pragma: no cover - Flask not available or no context
         pass

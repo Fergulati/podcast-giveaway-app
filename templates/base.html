@@ -13,6 +13,7 @@
             {% if username %}
             <div>
                 <span class="mr-2">Welcome {{ username }}</span>
+
                 <a href="{{ url_for('main.dashboard') }}" class="underline mr-2">Dashboard</a>
                 <a href="{{ url_for('main.logout') }}" class="underline">Logout</a>
             </div>

@@ -1,3 +1,8 @@
 Flask
 requests
 pytest
+SQLAlchemy
+APScheduler
+Flask-SocketIO
+Flask-Dance
+google-api-python-client

@@ -16,6 +16,11 @@ except Exception:
     init_scheduler = None  # type: ignore
 
 try:
+    from .admin.routes import init_admin
+except Exception:
+    init_admin = None  # type: ignore
+
+try:
     from .socket_events import init_socket_events
 except Exception:
     init_socket_events = None  # type: ignore
@@ -38,6 +43,12 @@ def create_app():
             session_factory = init_db()
         except Exception as exc:  # pragma: no cover - optional dependency
             app.logger.warning("Database unavailable: %s", exc)
+
+    if init_admin and session_factory is not None:
+        try:
+            init_admin(app, session_factory)
+        except Exception as exc:  # pragma: no cover - optional dependency
+            app.logger.warning("Admin init failed: %s", exc)
 
     socketio = None
     if SocketIO:

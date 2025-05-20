@@ -7,6 +7,7 @@ from sqlalchemy import (
     DateTime,
     Text,
     Enum,
+    func,
 )
 from sqlalchemy.orm import relationship, declarative_base
 
@@ -71,3 +72,29 @@ class PointsLedger(Base):
             f"<PointsLedger id={self.id} user_id={self.user_id} "
             f"points_delta={self.points_delta} reason={self.reason!r}>"
         )
+
+
+class OAuth(Base):
+    """Minimal token storage compatible with Flask-Dance."""
+
+    __tablename__ = 'oauth'
+
+    id = Column(Integer, primary_key=True)
+    provider = Column(String, nullable=False)
+    token = Column(Text, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    user = relationship('User')
+
+    def __repr__(self) -> str:
+        return (
+            f"<OAuth id={self.id} provider={self.provider!r} user_id={self.user_id}>"
+        )
+
+
+def get_total_points(session, user_id: int) -> int:
+    """Return the total points for a user."""
+    total = session.query(func.sum(PointsLedger.points_delta)).filter_by(
+        user_id=user_id
+    ).scalar()
+    return total or 0

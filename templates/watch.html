@@ -3,9 +3,22 @@
 {% block content %}
 <h2 class="text-xl mb-4">{{ channel.title }}</h2>
 <div class="mb-4">
-    <iframe class="w-full h-96" src="https://www.youtube.com/embed?listType=user_uploads&list={{ channel.id }}" frameborder="0" allowfullscreen></iframe>
+    <iframe id="player" class="w-full h-96" src="https://www.youtube.com/embed?listType=user_uploads&list={{ channel.id }}" frameborder="0" allowfullscreen></iframe>
 </div>
 <p>
     <a href="{{ channel.url }}" class="text-blue-600 underline" target="_blank">View on YouTube</a>
 </p>
+
+<div id="quiz-container" class="mt-6 p-4 bg-white shadow">
+    <h3 class="font-bold mb-2">Quiz Question</h3>
+    <p id="quiz-question" class="mb-2"></p>
+    <ul id="quiz-options" class="list-disc pl-5"></ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>var CHANNEL_ID = "{{ channel.id }}";</script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="{{ url_for('static', filename='quiz.js') }}"></script>
 {% endblock %}

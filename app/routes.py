@@ -17,12 +17,9 @@ except Exception:  # pragma: no cover - optional dependency
     google = None  # type: ignore
 import json
 import os
+import pathlib
 import requests
-import json
-try:
-    from flask_dance.contrib.google import google
-except Exception:
-    google = None  # type: ignore
+from .utils.quiz import generate_question, load_transcript
 
 bp = Blueprint('main', __name__)
 
@@ -36,6 +33,9 @@ CHANNEL_IDS = [
     'UCAI6Gk0R_1aGa76ShKFA78Q',
     'UCJfeceoPn3MSpdNM3n-DIWg',
 ]
+
+TRANSCRIPTS_DIR = pathlib.Path(__file__).resolve().parent.parent / "transcripts"
+TRANSCRIPTS_DIR.mkdir(exist_ok=True)
 
 
 def init_app(app):
@@ -61,6 +61,27 @@ def watch_channel(cid):
     if channel is None:
         return redirect(url_for('main.index'))
     return render_template('watch.html', username=username, channel=channel)
+
+
+@bp.route('/api/upload_transcript/<cid>', methods=['POST'])
+def upload_transcript(cid):
+    """Store transcript text for a channel."""
+    text = request.get_data(as_text=True)
+    if not text:
+        return {"error": "no transcript"}, 400
+    path = TRANSCRIPTS_DIR / f"{cid}.txt"
+    path.write_text(text, encoding="utf-8")
+    return {"status": "ok"}
+
+
+@bp.route('/api/quiz/<cid>')
+def quiz_question(cid):
+    """Return a generated quiz question for the channel."""
+    path = TRANSCRIPTS_DIR / f"{cid}.txt"
+    if not path.exists():
+        return {"question": "Transcript not found", "options": []}
+    transcript = load_transcript(str(path))
+    return generate_question(transcript)
 
 
 @bp.route('/login', methods=['GET', 'POST'])
